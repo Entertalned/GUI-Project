@@ -4,127 +4,132 @@
 // @version      3.0
 // @description  Optimized survev.io UI customizer
 // @match        https://survev.io/*
+// @match        http://185.126.158.61/*
+// @match        http://66.179.254.36/*
+// @match        https://zurviv.io/*
+// @match        https://cursev.io/*
+// @match        https://resurviv.biz/*
 // @run-at       document-end
 // ==/UserScript==
 
 (function() {
-    'use strict';
+        'use strict';
 
-    // ===== This is for the constants =====
-    const CONFIG = {
-        cssUrl: 'https://raw.githubusercontent.com/NAMERIO/Survev.io-CSS-Script/main/Individual%20Style%20CSS/Namerio%20Commison.css',
-        defaultBG: 'https://m.media-amazon.com/images/I/81yrz+uGqpL.jpg',
-        defaultAvatar: 'https://yt3.googleusercontent.com/H6H4wfEryyWmbYHXKECfPsauv5Wup26HpUFrDjCnuq32waY43Xatq1DrCtJ0Vm7hX-LVDwGo=s900-c-k-c0x00ffffff-no-rj',
-        apiUrl: 'https://api.survev.io/api',
-        toggleKey: 'h',
-        version: '3.0'
-    };
+        // ===== This is for the constants =====
+        const CONFIG = {
+            cssUrl: 'https://raw.githubusercontent.com/NAMERIO/Survev.io-CSS-Script/main/Individual%20Style%20CSS/Namerio%20Commison.css',
+            defaultBG: 'https://m.media-amazon.com/images/I/81yrz+uGqpL.jpg',
+            defaultAvatar: 'https://yt3.googleusercontent.com/H6H4wfEryyWmbYHXKECfPsauv5Wup26HpUFrDjCnuq32waY43Xatq1DrCtJ0Vm7hX-LVDwGo=s900-c-k-c0x00ffffff-no-rj',
+            apiUrl: 'https://api.survev.io/api',
+            toggleKey: 'h',
+            version: '3.0'
+        };
 
-    const GRADIENT_DEFAULTS = {
-        youKilled: {
-            direction: 'to right',
-            stops: [{
-                    color: '#04ff00',
-                    pos: 0
-                },
-                {
-                    color: '#9bf984',
-                    pos: 50
-                },
-                {
-                    color: '#ffffff',
-                    pos: 100
-                }
-            ]
-        },
-        youGotKilled: {
-            direction: 'to right',
-            stops: [{
-                    color: '#80d177',
-                    pos: 0
-                },
-                {
-                    color: '#8aff9c',
-                    pos: 50
-                },
-                {
-                    color: '#ffffff',
-                    pos: 100
-                }
-            ]
-        },
-        unified: {
-            direction: 'to right',
-            stops: [{
-                    color: '#6a6803',
-                    pos: 0
-                },
-                {
-                    color: '#d0db06',
-                    pos: 40
-                },
-                {
-                    color: '#f7f984',
-                    pos: 70
-                },
-                {
-                    color: '#fffec1',
-                    pos: 100
-                }
-            ]
-        }
-    };
-
-    // ===== This is for the utility functions =====
-    const Utils = {
-        log: (msg, color = '#00f7ff') => console.log(`%c${msg}`, `color: ${color}`),
-
-        createStyle: (css) => {
-            const style = document.createElement('style');
-            style.textContent = css;
-            document.head.appendChild(style);
-            return style;
-        },
-
-        waitForElement: (selector, callback, maxAttempts = 20) => {
-            const check = () => {
-                const el = document.querySelector(selector);
-                if (el) {
-                    callback(el);
-                    return true;
-                }
-                return false;
-            };
-
-            if (!check()) {
-                let attempts = 0;
-                const interval = setInterval(() => {
-                    attempts++;
-                    if (check() || attempts >= maxAttempts) {
-                        clearInterval(interval);
+        const GRADIENT_DEFAULTS = {
+            youKilled: {
+                direction: 'to right',
+                stops: [{
+                        color: '#04ff00',
+                        pos: 0
+                    },
+                    {
+                        color: '#9bf984',
+                        pos: 50
+                    },
+                    {
+                        color: '#ffffff',
+                        pos: 100
                     }
-                }, 500);
+                ]
+            },
+            youGotKilled: {
+                direction: 'to right',
+                stops: [{
+                        color: '#80d177',
+                        pos: 0
+                    },
+                    {
+                        color: '#8aff9c',
+                        pos: 50
+                    },
+                    {
+                        color: '#ffffff',
+                        pos: 100
+                    }
+                ]
+            },
+            unified: {
+                direction: 'to right',
+                stops: [{
+                        color: '#6a6803',
+                        pos: 0
+                    },
+                    {
+                        color: '#d0db06',
+                        pos: 40
+                    },
+                    {
+                        color: '#f7f984',
+                        pos: 70
+                    },
+                    {
+                        color: '#fffec1',
+                        pos: 100
+                    }
+                ]
             }
-        }
-    };
+        };
 
-    // ===== This load the css from the github repository =====
-    const CSSLoader = {
-        async loadExternal() {
-            try {
-                const response = await fetch(CONFIG.cssUrl);
-                if (!response.ok) throw new Error(`Failed to load CSS: ${response.status}`);
-                const css = await response.text();
-                const cleanedCss = css.replace(/@-moz-document[^{]+\{([\s\S]*)\}$/m, '$1');
-                Utils.createStyle(cleanedCss);
-                Utils.log('[Custom CSS loaded from GitHub]');
-            } catch (err) {
-                console.error('[Error loading CSS]', err);
+        // ===== This is for the utility functions =====
+        const Utils = {
+            log: (msg, color = '#00f7ff') => console.log(`%c${msg}`, `color: ${color}`),
+
+            createStyle: (css) => {
+                const style = document.createElement('style');
+                style.textContent = css;
+                document.head.appendChild(style);
+                return style;
+            },
+
+            waitForElement: (selector, callback, maxAttempts = 20) => {
+                const check = () => {
+                    const el = document.querySelector(selector);
+                    if (el) {
+                        callback(el);
+                        return true;
+                    }
+                    return false;
+                };
+
+                if (!check()) {
+                    let attempts = 0;
+                    const interval = setInterval(() => {
+                        attempts++;
+                        if (check() || attempts >= maxAttempts) {
+                            clearInterval(interval);
+                        }
+                    }, 500);
+                }
             }
-        },
+        };
 
-        loadOverrides() {
-            const css = `
+        // ===== This load the css from the github repository =====
+        const CSSLoader = {
+            async loadExternal() {
+                try {
+                    const response = await fetch(CONFIG.cssUrl);
+                    if (!response.ok) throw new Error(`Failed to load CSS: ${response.status}`);
+                    const css = await response.text();
+                    const cleanedCss = css.replace(/@-moz-document[^{]+\{([\s\S]*)\}$/m, '$1');
+                    Utils.createStyle(cleanedCss);
+                    Utils.log('[Custom CSS loaded from GitHub]');
+                } catch (err) {
+                    console.error('[Error loading CSS]', err);
+                }
+            },
+
+            loadOverrides() {
+                const css = `
                 html body .surviv-shirts {
                     background: linear-gradient(180deg, rgba(15,20,25,0.25) 0%, rgba(10,12,15,0.25) 100%) !important;
                     color: #fff !important;
@@ -184,47 +189,47 @@
                     font-size: 12px;
                 }
             `;
-            Utils.createStyle(css);
-            Utils.log('[Overrides loaded]', '#ff66cc');
-        }
-    };
+                Utils.createStyle(css);
+                Utils.log('[Overrides loaded]', '#ff66cc');
+            }
+        };
 
-    // ===== This is for stats display =====
-    const API = {
-        async getUserProfile() {
-            const res = await fetch(`${CONFIG.apiUrl}/user/profile`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: '{}',
-                credentials: 'include'
-            });
-            const data = await res.json();
-            return data.profile;
-        },
+        // ===== This is for stats display =====
+        const API = {
+            async getUserProfile() {
+                const res = await fetch(`${CONFIG.apiUrl}/user/profile`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: '{}',
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                return data.profile;
+            },
 
-        async getUserStats(slug) {
-            const body = JSON.stringify({
-                slug,
-                interval: 'alltime',
-                mapIdFilter: '-1'
-            });
-            const res = await fetch(`${CONFIG.apiUrl}/user_stats`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body,
-                credentials: 'include'
-            });
-            return res.json();
-        }
-    };
+            async getUserStats(slug) {
+                const body = JSON.stringify({
+                    slug,
+                    interval: 'alltime',
+                    mapIdFilter: '-1'
+                });
+                const res = await fetch(`${CONFIG.apiUrl}/user_stats`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body,
+                    credentials: 'include'
+                });
+                return res.json();
+            }
+        };
 
-    const StatsDisplay = {
-        buildHTML(data) {
-            return `
+        const StatsDisplay = {
+                buildHTML(data) {
+                    return `
                 <div class="survev-stats-card fade-in">
                     <h3>${data.username}</h3>
                     <div class="totals">
@@ -386,10 +391,12 @@
         createStyles() {
             const css = `
                 #customBox {
+                    opacity: 0;
+                    pointer-events: none;
                     position: fixed;
                     top: 50%;
                     left: 50%;
-                    transform: translate(-50%, -50%);
+                    transition: opacity 0.25s ease;
                     width: 360px;
                     max-height: 70vh;
                     overflow: hidden;
@@ -401,6 +408,12 @@
                     color: #e0f7ff;
                     font-family: "Poppins", "Roboto", sans-serif;
                     z-index: 9999;
+                }
+                #customBox.ready {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+                #customBox.animated {
                     animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
                 }
                 @keyframes slideIn {
@@ -458,31 +471,57 @@
                 }
                 .tab-row {
                     display: flex;
-                    gap: 4px;
-                    padding: 8px 12px;
-                    background: rgba(0,0,0,0.2);
+                    gap: 0;
+                    padding: 0;
+                    background: linear-gradient(135deg, rgba(0,247,255,0.08) 0%, rgba(0,150,200,0.05) 100%);
+                    border-bottom: 1px solid rgba(0,247,255,0.2);
+                    border-radius: 0;
+                    position: relative;
                 }
                 .tabBtn {
                     flex: 1;
-                    background: rgba(255,255,255,0.03);
-                    border: 1px solid rgba(0,247,255,0.15);
-                    border-radius: 8px;
-                    padding: 6px 0;
+                    background: transparent;
+                    border: none;
+                    border-radius: 0;
+                    padding: 12px 8px;
                     font-weight: 600;
-                    font-size: 12px;
-                    color: rgba(0,247,255,0.7);
+                    font-size: 13px;
+                    color: rgba(0, 113, 117, 0.6);
                     cursor: pointer;
-                    transition: all 0.2s ease;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    border-bottom: 2px solid transparent;
                 }
                 .tabBtn:hover {
-                    background: rgba(0,247,255,0.1);
-                    border-color: rgba(0,247,255,0.3);
+                    background: rgba(0,247,255,0.05);
+                    color: rgba(0, 81, 83, 0.8);
                 }
                 .tabBtn.active {
-                    background: linear-gradient(135deg, rgba(0,247,255,0.25) 0%, rgba(0,200,255,0.2) 100%);
-                    color: #00f7ff;
-                    border-color: #00f7ff;
-                    box-shadow: 0 0 12px rgba(0,247,255,0.3);
+                    background: rgba(0,247,255,0.1);
+                    color: #004f52ff;
+                }
+                .tabBtn.active::before {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;     /* was top: 0 */
+                    left: 0;
+                    right: 0;
+                    height: 2px;
+                    background: linear-gradient(90deg, #004042ff 0%, #006a80ff 100%);
+                }
+                .tabBtn:not(:last-child)::after {
+                    content: '';
+                    position: absolute;
+                    right: 0;
+                    top: 20%;
+                    bottom: 20%;
+                    width: 1px;
+                    background: rgba(0,247,255,0.15);
+                }
+                .tabBtn:hover::after {
+                    background: rgba(0,247,255,0.25);
                 }
                 .tabSection {
                     padding: 12px;
@@ -598,6 +637,38 @@
                     min-width: 35px;
                     text-align: center;
                 }
+                #customBox select {
+                    width: 100%;
+                    border: 1px solid rgba(0,247,255,0.2);
+                    border-radius: 8px;
+                    padding: 8px 10px;
+                    background: rgba(0,0,0,0.3);
+                    color: #e8ffff;
+                    font-size: 12px;
+                    transition: all 0.2s ease;
+                    box-sizing: border-box;
+                    cursor: pointer;
+                }
+                #customBox select:focus {
+                    outline: none;
+                    border-color: #00f7ff;
+                    background: rgba(0,247,255,0.05);
+                    box-shadow: 0 0 0 3px rgba(0,247,255,0.1);
+                }
+                .shortcut-display {
+                    background: rgba(0,0,0,0.3);
+                    border: 1px solid rgba(0,247,255,0.2);
+                    border-radius: 8px;
+                    padding: 8px 10px;
+                    text-align: center;
+                }
+                #currentShortcut {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #00f7ff;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
                 .gradient-block {
                     background: rgba(0,0,0,0.25);
                     border: 1px solid rgba(0,247,255,0.15);
@@ -697,23 +768,21 @@
                     border: 1px solid rgba(0,247,255,0.2);
                 }
                 #customBox button {
-                    background: linear-gradient(135deg, #00f7ff 0%, #00b8cc 100%);
+                    background: linear-gradient(135deg, #003b3fb2 0%);
                     border: none;
-                    border-radius: 8px;
+                    border-radius: 4px;
                     padding: 8px 14px;
                     margin: 4px;
                     cursor: pointer;
-                    color: #000;
+                    color: #ffffffff;
                     font-weight: 700;
                     font-size: 12px;
                     transition: all 0.2s ease;
-                    box-shadow: 0 2px 8px rgba(0,247,255,0.3);
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                 }
                 #customBox button:hover {
                     transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(0,247,255,0.4);
                 }
                 #customBox button:active {
                     transform: translateY(0);
@@ -777,8 +846,9 @@
 
                 <div class="tab-row">
                     <button class="tabBtn active" data-tab="images">Images</button>
-                    <button class="tabBtn" data-tab="colors">Killfeed</button>
+                    <button class="tabBtn" data-tab="colors">IN GAME UI</button>
                     <button class="tabBtn" data-tab="button">Button</button>
+                    <button class="tabBtn" data-tab="settings">Settings</button>
                 </div>
 
                 <div id="tab-images" class="tabSection">
@@ -810,6 +880,19 @@
                     </div>
                 </div>
 
+                <div id="tab-settings" class="tabSection" style="display:none;">
+                    <div class="input-group">
+                        <label>Open/Close Keyboard Shortcut (click apply to save after changing)</label>
+                        <button id="setShortcutBtn">Set Key</button>
+                    </div>
+                    <div class="input-group">
+                        <label>Open/Close Current Shortcut</label>
+                        <div class="shortcut-display">
+                            <span id="currentShortcut">Shift + H</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="imageButtons" class="button-row">
                     <button id="applyImageBtn">Apply</button>
                     <button id="resetImageBtn" class="reset-btn">Reset</button>
@@ -825,15 +908,32 @@
                     <button id="resetButtonBtn" class="reset-btn">Reset</button>
                 </div>
 
-                <small>Press Shift+${CONFIG.toggleKey.toUpperCase()} to toggle</small>
+                <div id="settingsButtons" class="button-row" style="display:none;">
+                    <button id="applySettingsBtn">Apply</button>
+                    <button id="resetSettingsBtn" class="reset-btn">Reset</button>
+                </div>
+
+                <small id="shortcutHelp">Press Shift+H to toggle</small>
             `;
 
+            this.box.style.left = '-9999px';
+            this.box.style.top = '-9999px';
+            this.box.style.visibility = 'hidden';
             document.body.appendChild(this.box);
             this.setupEventListeners();
             this.setupDragging();
             this.initializeInputs();
             this.initializeGradients();
             this.restorePosition();
+            requestAnimationFrame(() => {
+                this.box.style.visibility = 'visible';
+                this.box.classList.add('ready');
+                const savedPosition = localStorage.getItem('customBoxPosition');
+                if (!savedPosition) {
+                    this.box.classList.add('animated');
+                }
+            });
+
         },
 
         setupEventListeners() {
@@ -849,6 +949,7 @@
                     this.box.querySelector('#imageButtons').style.display = (tab === 'images') ? 'flex' : 'none';
                     this.box.querySelector('#colorButtons').style.display = (tab === 'colors') ? 'flex' : 'none';
                     this.box.querySelector('#buttonButtons').style.display = (tab === 'button') ? 'flex' : 'none';
+                    this.box.querySelector('#settingsButtons').style.display = (tab === 'settings') ? 'flex' : 'none';
                 }
             });
 
@@ -865,15 +966,15 @@
             this.box.querySelector('#applyButtonBtn').addEventListener('click', () => this.applyButtonColor());
             this.box.querySelector('#resetButtonBtn').addEventListener('click', () => this.resetButtonColor());
 
-            let shiftDown = false;
+            this.box.querySelector('#applySettingsBtn').addEventListener('click', () => this.applySettings());
+            this.box.querySelector('#resetSettingsBtn').addEventListener('click', () => this.resetSettings());
+
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Shift') shiftDown = true;
-                if (shiftDown && e.key.toLowerCase() === CONFIG.toggleKey) {
+                const currentShortcut = localStorage.getItem('customShortcut') || CONFIG.toggleKey;
+                const pressed = e.key.toLowerCase();
+                if (pressed === currentShortcut) {
                     this.box.style.display = (this.box.style.display === 'none') ? 'block' : 'none';
                 }
-            });
-            document.addEventListener('keyup', (e) => {
-                if (e.key === 'Shift') shiftDown = false;
             });
         },
 
@@ -926,8 +1027,12 @@
                     this.box.style.top = position.top + 'px';
                     this.box.style.transform = 'none';
                 } catch (e) {
-                    console.warn('Failed to restore custom box position:', e);
+                    console.warn('Failed to restore position', e);
                 }
+            } else {
+                this.box.style.left = '50%';
+                this.box.style.top = '50%';
+                this.box.style.transform = 'translate(-50%, -50%)';
             }
         },
 
@@ -960,6 +1065,30 @@
 
             buttonColorInput.addEventListener('input', () => {
                 this.updateButtonColorCSS(buttonColorInput.value, buttonTransparencyInput.value);
+            });
+
+            const setShortcutBtn = this.box.querySelector('#setShortcutBtn');
+            const currentShortcut = this.box.querySelector('#currentShortcut');
+            const savedShortcut = localStorage.getItem('customShortcut') || CONFIG.toggleKey;
+            this.updateShortcutDisplay(savedShortcut);
+
+            setShortcutBtn.addEventListener('click', () => {
+                setShortcutBtn.textContent = 'Press any key...';
+                setShortcutBtn.disabled = true;
+                setShortcutBtn.style.opacity = '0.7';
+
+                const handleKey = (e) => {
+                    e.preventDefault();
+                    const newKey = e.key.toLowerCase();
+                    this.updateShortcutDisplay(newKey);
+                    setShortcutBtn.textContent = `Selected: ${newKey.toUpperCase()}`;
+                    setShortcutBtn.disabled = false;
+                    setShortcutBtn.style.opacity = '1';
+                    localStorage.setItem('pendingShortcut', newKey);
+
+                    document.removeEventListener('keydown', handleKey);
+                };
+                document.addEventListener('keydown', handleKey);
             });
         },
 
@@ -1313,7 +1442,33 @@
                     box-shadow: 0 4px 12px rgba(0, 0, 0, ${alpha * 0.3}) !important;
                 }
             `;
-        }
+        },
+
+        updateShortcutDisplay(shortcut) {
+            const currentShortcut = this.box.querySelector('#currentShortcut');
+            const shortcutHelp = this.box.querySelector('#shortcutHelp');
+            const displayKey = shortcut.length === 1 ? shortcut.toUpperCase() : shortcut;
+            currentShortcut.textContent = `Key: ${displayKey}`;
+            shortcutHelp.textContent = `Press ${displayKey} to toggle`;
+        },
+
+        applySettings() {
+            const pendingShortcut = localStorage.getItem('pendingShortcut');
+            if (pendingShortcut) {
+                localStorage.setItem('customShortcut', pendingShortcut);
+                localStorage.removeItem('pendingShortcut');
+                Utils.log(`[Shortcut set to "${pendingShortcut.toUpperCase()}"]`, '#00ff00');
+            }
+            const savedShortcut = localStorage.getItem('customShortcut') || CONFIG.toggleKey;
+            this.updateShortcutDisplay(savedShortcut);
+        },
+
+        resetSettings() {
+            localStorage.removeItem('customShortcut');
+            const defaultKey = CONFIG.toggleKey;
+            this.updateShortcutDisplay(defaultKey);
+        },
+
     };
 
     async function init() {
@@ -1322,10 +1477,12 @@
         StatsDisplay.load();
         ImageManager.init();
         GradientManager.apply();
-        UIManager.createStyles();
-        UIManager.createBox();
-
-        Utils.log('[Survev.io UI Loaded]', '#00ff00');
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                UIManager.createStyles();
+                UIManager.createBox();
+            }, 200);
+        });
     }
 
     if (document.readyState === 'loading') {
