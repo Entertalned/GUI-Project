@@ -14,4 +14,5 @@
 <li>Locate the dashboard, after locating the dashboard you should see a square with a "+" in the middle of it, press that.</li>
 <li>You should now be able to copy the code from the github into the script you just made</li>
 <li>Click file, save, and refresh Survev.io.</li>
-<li><b>NOTE You might have to refresh twice to see the GUI popup.</b></li>
+
+> NOTE: You might have to refresh twice to see the GUI popup.
