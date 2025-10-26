@@ -77,7 +77,7 @@
                         pos: 100
                     }
                 ]
-            }
+            },
         };
 
         // ===== This is for the utility functions =====
@@ -368,6 +368,192 @@
                 }
             `;
             document.head.appendChild(style);
+        },
+        applyMixed() {
+            const style = document.getElementById('killfeedStyle') || document.createElement('style');
+            style.id = 'killfeedStyle';
+            style.textContent = `
+                #ui-killfeed .killfeed-text[style*="rgb(0, 191, 255)"],
+                #ui-killfeed .killfeed-text[style*="#00bfff"] {
+                    background: linear-gradient(to right, #025a5d, #00bfff, #84eff9, #ffffff) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+                #ui-killfeed .killfeed-text[style*="rgb(209, 119, 124)"],
+                #ui-killfeed .killfeed-text[style*="#d1777c"] {
+                    background: linear-gradient(to right, #6a0321, #db064d, #f984a5, #ffc1d3) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+                #ui-killfeed-0 .killfeed-text {
+                    background: linear-gradient(to right, #6a4303, #db8c06, #f9c784, #ffe6c1) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+                #ui-killfeed-1 .killfeed-text {
+                    background: linear-gradient(to right, #1d036a, #4206db, #8b84f9, #d7c1ff) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+                #ui-killfeed-2 .killfeed-text {
+                    background: linear-gradient(to right, #036a2b, #06db3a, #84f9a0, #c1ffd1) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+                #ui-killfeed-3 .killfeed-text {
+                    background: linear-gradient(to right, #6a0321, #d1777c, #ff8a8a, #ffffff) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+                #ui-killfeed-4 .killfeed-text {
+                    background: linear-gradient(to right, #6e0161, #c206db, #f984f3, #ffc1f7) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+                #ui-killfeed-5 .killfeed-text {
+                    background: linear-gradient(to right, #6a6803, #d0db06, #f7f984, #fffec1) !important;
+                    color: transparent !important;
+                    -webkit-background-clip: text !important;
+                    -webkit-text-fill-color: transparent !important;
+                    font-weight: bold !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    };
+
+    // ===== This is for the healthbar color =====
+    const HealthBarStyles = {
+        default: `
+            #ui-health-actual.ui-bar-inner {
+                background: #00ff66 !important;
+                border-radius: 4px !important;
+            }
+        `,
+        rainbow: `
+            #ui-health-actual.ui-bar-inner {
+                background: linear-gradient(270deg, #00eaff, #00ffcc, #33ff66, #ffee00, #ff8800, #ff3366, #00eaff) !important;
+                background-size: 400% 400% !important;
+                animation: healthGradient 20s ease infinite !important;
+                border-radius: 4px !important;
+            }
+            @keyframes healthGradient {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        `
+    };
+
+    const HealthBarManager = {
+        apply(color) {
+            const finalColor = color || localStorage.getItem('healthBarColor') || '#ffffffff';
+            let style = document.getElementById('healthBarStyle');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'healthBarStyle';
+                document.head.appendChild(style);
+            }
+            style.textContent = `
+                #ui-health-actual.ui-bar-inner {
+                    background: ${finalColor} !important;
+                    border-radius: 4px !important;
+                }
+            `;
+            localStorage.setItem('healthBarColor', finalColor);
+        },
+        load() {
+            return localStorage.getItem('healthBarColor') || '#00ff66';
+        }
+    };
+
+    const HealthEditorManager = {
+        observer: null,
+
+        apply(config) {
+            if (!document.getElementById('healthGradientKeyframes')) {
+                const keyframes = document.createElement('style');
+                keyframes.id = 'healthGradientKeyframes';
+                keyframes.textContent = `
+                    @keyframes healthGradient {
+                        0% { background-position: 0% 50%; }
+                        50% { background-position: 100% 50%; }
+                        100% { background-position: 0% 50%; }
+                    }
+                `;
+                document.head.appendChild(keyframes);
+            }
+
+            let style = document.getElementById('dynamicHealthBarStyle');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'dynamicHealthBarStyle';
+                document.head.appendChild(style);
+            }
+
+            if (config.type === 'solid') {
+                style.textContent = `
+                    #ui-health-actual.ui-bar-inner {
+                        background: ${config.color} !important;
+                        border-radius: 4px !important;
+                        animation: none !important;
+                    }
+                `;
+            } else {
+                const stops = config.stops.map(s => `${s.color} ${s.pos}%`).join(', ');
+                const gradient = `linear-gradient(${config.direction}, ${stops})`;
+                const animate = config.animation
+                    ? `
+                        background-size: 400% 400%;
+                        animation: healthGradient ${10 / (config.speed || 1)}s ease infinite;
+                    `
+                    : `
+                        background-size: 100% 100%;
+                        animation: none;
+                    `;
+
+                style.textContent = `
+                    #ui-health-actual.ui-bar-inner {
+                        background: ${gradient} !important;
+                        border-radius: 4px !important;
+                        ${animate}
+                    }
+                `;
+            }
+
+            this.save(config);
+        },
+
+        save(config) {
+            localStorage.setItem('healthBarConfig', JSON.stringify(config));
+        },
+
+        load() {
+            return JSON.parse(localStorage.getItem('healthBarConfig') || JSON.stringify({
+                type: 'solid',
+                color: '#00ff66',
+                direction: 'to right',
+                animation: false,
+                speed: 5,
+                stops: [
+                    { color: '#00ff66', pos: 0 },
+                    { color: '#00ff66', pos: 100 }
+                ]
+            }));
         }
     };
 
@@ -828,6 +1014,29 @@
                     padding: 6px;
                     background: rgba(0,0,0,0.2);
                 }
+                .mixed-toggle-btn {
+                    display: block;
+                    width: 100%;
+                    padding: 10px 14px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    letter-spacing: 0.5px;
+                    color: #00f7ff;
+                    background: rgba(0,247,255,0.08);
+                    border: 1px solid rgba(0,247,255,0.3);
+                    border-radius: 8px;
+                    transition: all 0.25s ease;
+                    margin-bottom: 12px;
+                }
+                .mixed-toggle-btn:hover {
+                    background: rgba(0,247,255,0.15);
+                    transform: translateY(-1px);
+                }
+                .mixed-toggle-btn:active {
+                    background: rgba(0,247,255,0.25);
+                    transform: translateY(0);
+                }
             `;
             Utils.createStyle(css);
         },
@@ -863,6 +1072,33 @@
                 </div>
 
                 <div id="tab-colors" class="tabSection" style="display:none;">
+                    <div class="gradient-block" id="healthBarEditor">
+                        <h4>Health Bar Editor</h4>
+                        <div class="gradient-controls">
+                            <label>Type:</label>
+                            <select id="healthBarType">
+                                <option value="solid">Solid Color</option>
+                                <option value="gradient">Gradient</option>
+                            </select>
+                            <label>Direction:</label>
+                            <select id="healthBarDirection">
+                                <option value="to right">→ Right</option>
+                                <option value="to left">← Left</option>
+                                <option value="to bottom">↓ Down</option>
+                                <option value="to top">↑ Up</option>
+                            </select>
+                            <button id="addHealthStop" class="addStop">+ Add</button>
+                        </div>
+                        <div id="healthStops"></div>
+                        <div class="input-group">
+                            <label><input type="checkbox" id="healthBarAnimation"> Enable Animation</label>
+                        </div>
+                        <div class="input-group">
+                            <label>Animation Speed</label>
+                            <input id="healthAnimSpeed" type="range" min="1" max="10" value="5">
+                        </div>
+                        <div class="preview-bar" id="healthPreview"></div>
+                    </div>
                     <div id="gradientEditors"></div>
                 </div>
 
@@ -1090,6 +1326,124 @@
                 };
                 document.addEventListener('keydown', handleKey);
             });
+
+            // === This is for health bar editor ===
+            const healthConfig = HealthEditorManager.load();
+            const typeSelect = this.box.querySelector('#healthBarType');
+            const dirSelect = this.box.querySelector('#healthBarDirection');
+            const animCheckbox = this.box.querySelector('#healthBarAnimation');
+            const stopContainer = this.box.querySelector('#healthStops');
+            const preview = this.box.querySelector('#healthPreview');
+            const addStopBtn = this.box.querySelector('#addHealthStop');
+            let solidColorPicker = document.createElement('input');
+            solidColorPicker.type = 'color';
+            solidColorPicker.id = 'solidHealthColor';
+            solidColorPicker.style.display = (healthConfig.type === 'solid') ? 'block' : 'none';
+            solidColorPicker.value = healthConfig.color || '#00ff66';
+            stopContainer.before(solidColorPicker);
+
+            solidColorPicker.addEventListener('input', e => {
+                healthConfig.color = e.target.value;
+                updatePreview();
+            });
+
+
+            function renderStops() {
+                stopContainer.innerHTML = '';
+                healthConfig.stops.forEach((stop, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'stop-row';
+                    row.innerHTML = `
+                        <input type="color" value="${stop.color}">
+                        <input type="number" min="0" max="100" value="${stop.pos}" title="Position (%)">
+                        <button class="delStop">✕</button>
+                    `;
+
+                    const colorInput = row.querySelector('input[type=color]');
+                    const posInput = row.querySelector('input[type=number]');
+                    const delBtn = row.querySelector('.delStop');
+
+                    colorInput.addEventListener('input', e => {
+                        stop.color = e.target.value;
+                        updatePreview();
+                    });
+
+                    posInput.addEventListener('input', e => {
+                        const newPos = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                        stop.pos = newPos;
+                        updatePreview();
+                    });
+
+                    delBtn.addEventListener('click', () => {
+                        if (healthConfig.stops.length <= 1) {
+                            alert('At least one stop required!');
+                            return;
+                        }
+                        healthConfig.stops.splice(i, 1);
+                        renderStops();
+                        setTimeout(() => updatePreview(), 0);
+                    });
+
+                    stopContainer.appendChild(row);
+                });
+            }
+
+            addStopBtn.addEventListener('click', () => {
+                if (healthConfig.stops.length >= 4) {
+                    alert('Maximum 4 color stops allowed!');
+                    return;
+                }
+                healthConfig.stops.push({ color: '#ffffff', pos: 50 });
+                renderStops();
+                setTimeout(() => updatePreview(), 0);
+            });
+
+
+            function updatePreview() {
+                if (healthConfig.type === 'solid') {
+                    preview.style.background = healthConfig.color;
+                    preview.style.animation = 'none';
+                } else {
+                    const stops = healthConfig.stops.map(s => `${s.color} ${s.pos}%`).join(', ');
+                    const gradient = `linear-gradient(${healthConfig.direction}, ${stops})`;
+                    preview.style.background = gradient;
+                    preview.style.backgroundSize = healthConfig.animation ? '400% 400%' : '100% 100%';
+                    preview.style.animation = healthConfig.animation ? 'healthGradient 8s ease infinite' : 'none';
+                }
+                HealthEditorManager.apply(healthConfig);
+            }
+
+            typeSelect.value = healthConfig.type;
+            dirSelect.value = healthConfig.direction;
+            animCheckbox.checked = healthConfig.animation;
+            renderStops();
+            updatePreview();
+            typeSelect.addEventListener('change', () => {
+                healthConfig.type = typeSelect.value;
+                solidColorPicker.style.display = (healthConfig.type === 'solid') ? 'block' : 'none';
+                updatePreview();
+            });
+            dirSelect.addEventListener('change', () => {
+                healthConfig.direction = dirSelect.value;
+                updatePreview();
+            });
+            animCheckbox.addEventListener('change', () => {
+                healthConfig.animation = animCheckbox.checked;
+                updatePreview();
+            });
+            addStopBtn.addEventListener('click', () => {
+                if (healthConfig.stops.length >= 4) return alert('Max 4 color stops!');
+                healthConfig.stops.push({ color: '#ffffff', pos: 50 });
+                renderStops();
+                updatePreview();
+            });
+            const speedSlider = this.box.querySelector('#healthAnimSpeed');
+            speedSlider.value = healthConfig.speed || 5;
+
+            speedSlider.addEventListener('input', ()=>{
+                healthConfig.speed = parseFloat(speedSlider.value);
+                updatePreview();
+            });
         },
 
         initializeGradients() {
@@ -1101,6 +1455,29 @@
                 container.appendChild(block);
                 this.updatePreview(type.key);
             });
+            const mixedEnabled = localStorage.getItem('mixedGradientEnabled') === 'true';
+            const mixedBtn = document.createElement('button');
+            mixedBtn.id = 'mixedGradientBtn';
+            mixedBtn.textContent = mixedEnabled ? 'Mixed Gradient: ON' : 'Mixed Gradient: OFF';
+            mixedBtn.className = 'mixed-toggle-btn';
+            mixedBtn.style.marginBottom = '10px';
+            if (mixedEnabled) {
+                mixedBtn.style.background = 'rgba(0,255,150,0.15)';
+                mixedBtn.style.borderColor = 'rgba(0,255,150,0.5)';
+            }
+            mixedBtn.addEventListener('click', () => {
+                const enabled = localStorage.getItem('mixedGradientEnabled') === 'true';
+                const newState = !enabled;
+                localStorage.setItem('mixedGradientEnabled', newState);
+                mixedBtn.textContent = newState ? 'Mixed Gradient: ON' : 'Mixed Gradient: OFF';
+                mixedBtn.style.background = newState ? 'rgba(0,255,150,0.15)' : 'rgba(0,247,255,0.08)';
+                mixedBtn.style.borderColor = newState ? 'rgba(0,255,150,0.5)' : 'rgba(0,247,255,0.3)';
+
+                if (newState) GradientManager.applyMixed();
+                else GradientManager.apply();
+            });
+            container.prepend(mixedBtn);
+
         },
 
         createGradientBlock(type, data) {
@@ -1118,7 +1495,7 @@
                         <option value="to bottom right">↘ Diagonal</option>
                         <option value="to top left">↖ Diagonal</option>
                     </select>
-                    <button class="addStop">+ Stop</button>
+                    <button class="addStop">+ Add</button>
                 </div>
                 <div class="stops"></div>
                 <div class="preview-bar"></div>
@@ -1476,12 +1853,18 @@
         CSSLoader.loadOverrides();
         StatsDisplay.load();
         ImageManager.init();
-        GradientManager.apply();
+        HealthBarManager.apply(HealthBarManager.load());
         window.addEventListener('load', () => {
             setTimeout(() => {
                 UIManager.createStyles();
                 UIManager.createBox();
-            }, 200);
+                const mixedEnabled = localStorage.getItem('mixedGradientEnabled') === 'true';
+                if (mixedEnabled) {
+                    GradientManager.applyMixed();
+                } else {
+                    GradientManager.apply();
+                }
+            }, 500);
         });
     }
 
